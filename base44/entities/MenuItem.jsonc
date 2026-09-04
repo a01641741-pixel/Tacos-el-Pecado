@@ -1,52 +1,57 @@
 {
   "name": "MenuItem",
-  "type": "object",
   "properties": {
-    "name": {
-      "type": "string",
-      "title": "Nombre"
-    },
-    "description": {
-      "type": "string",
-      "title": "Descripción"
-    },
-    "price": {
-      "type": "number",
-      "title": "Precio"
-    },
     "category": {
-      "type": "string",
+      "default": "tacos",
       "enum": [
         "tacos",
         "especiales",
         "bebidas",
         "complementos"
       ],
-      "default": "tacos",
-      "title": "Categoría"
+      "title": "Categoría",
+      "type": "string"
+    },
+    "description": {
+      "title": "Descripción",
+      "type": "string"
     },
     "image_url": {
-      "type": "string",
-      "title": "Imagen"
+      "title": "Imagen",
+      "type": "string"
     },
     "is_available": {
-      "type": "boolean",
       "default": true,
-      "title": "Disponible"
+      "title": "Disponible",
+      "type": "boolean"
     },
     "is_featured": {
-      "type": "boolean",
       "default": false,
-      "title": "Destacado"
+      "title": "Destacado",
+      "type": "boolean"
+    },
+    "name": {
+      "title": "Nombre",
+      "type": "string"
     },
     "order_index": {
-      "type": "number",
       "default": 0,
-      "title": "Orden"
+      "title": "Orden",
+      "type": "number"
+    },
+    "os_id": {
+      "description": "Vincula este producto del menú público con su contraparte en El Pecado OS. Cuando está lleno, la disponibilidad (agotado/disponible) se sincroniza automáticamente desde el inventario real; cuando está vacío, este producto es solo del menú público y su disponibilidad se controla manualmente.",
+      "title": "ID en El Pecado OS",
+      "type": "string"
+    },
+    "price": {
+      "title": "Precio",
+      "type": "number"
     }
   },
   "required": [
     "name",
     "price"
-  ]
+  ],
+  "type": "object"
 }

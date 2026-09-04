@@ -37,6 +37,10 @@ export default function Menu() {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Best-effort: refresca disponibilidad real desde El Pecado OS antes de
+    // cargar el menú. Si el OS no responde (o no está configurado todavía),
+    // el menú se sigue mostrando con los datos que ya tiene guardados.
+    base44.functions.invoke('syncWithOs', { action: 'pullAvailability' }).catch(() => {});
     base44.entities.MenuItem.list('order_index', 50)
       .then((data) => { setItems(data && data.length ? data : FALLBACK); })
       .catch(() => setItems(FALLBACK))
@@ -44,7 +48,8 @@ export default function Menu() {
   }, []);
 
   const handleAdd = (item) => {
-    addItem({ name: item.name, price: item.price, image_url: item.image_url });
+    if (item.is_available === false) return;
+    addItem({ id: item.id, name: item.name, price: item.price, image_url: item.image_url });
     toast({ title: 'Añadido a la canasta', description: item.name });
   };
 
@@ -111,13 +116,15 @@ export default function Menu() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: i * 0.06 }}
-                className="group relative bg-card rounded-2xl overflow-hidden border border-white/5 hover:border-ember/40 transition-all cursor-pointer"
+                className={`group relative bg-card rounded-2xl overflow-hidden border border-white/5 hover:border-ember/40 transition-all cursor-pointer ${item.is_available === false ? 'opacity-60' : ''}`}
                 onClick={() => setSelected(item)}
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image src={item.image_url} alt={item.name} className="block w-full h-full transition-all duration-700 group-hover:scale-110 group-hover:brightness-125" />
+                  <Image src={item.image_url} alt={item.name} className={`block w-full h-full transition-all duration-700 ${item.is_available === false ? 'grayscale' : 'group-hover:scale-110 group-hover:brightness-125'}`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-card via-card/30 to-transparent" />
-                  {item.is_signature && (
+                  {item.is_available === false ? (
+                    <span className="absolute top-3 left-3 bg-obsidian/90 text-bone text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">Agotado</span>
+                  ) : item.is_signature && (
                     <span className="absolute top-3 left-3 bg-ember text-obsidian text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">Obra Maestra</span>
                   )}
                   {item.spice_level && SPICE_LABELS[item.spice_level] && (
@@ -134,10 +141,11 @@ export default function Menu() {
                   <p className="text-bone/50 text-sm mt-2 leading-relaxed line-clamp-2">{item.description}</p>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleAdd(item); }}
-                    aria-label={`Añadir ${item.name} a tu pedido`}
-                    className="w-full mt-4 flex items-center justify-center gap-2 bg-ember/10 hover:bg-ember text-ember hover:text-obsidian font-semibold text-sm py-3 rounded-xl transition-all focus-ember"
+                    disabled={item.is_available === false}
+                    aria-label={item.is_available === false ? `${item.name} agotado` : `Añadir ${item.name} a tu pedido`}
+                    className="w-full mt-4 flex items-center justify-center gap-2 bg-ember/10 hover:bg-ember text-ember hover:text-obsidian font-semibold text-sm py-3 rounded-xl transition-all focus-ember disabled:opacity-50 disabled:hover:bg-ember/10 disabled:hover:text-ember disabled:cursor-not-allowed"
                   >
-                    <Plus size={18} strokeWidth={2.5} /> Añadir a la canasta
+                    {item.is_available === false ? 'Agotado por hoy' : (<><Plus size={18} strokeWidth={2.5} /> Añadir a la canasta</>)}
                   </button>
                 </div>
               </motion.div>
@@ -182,10 +190,11 @@ export default function Menu() {
                   </div>
                 )}
                 <button
-                  onClick={() => { handleAdd(selected); setSelected(null); }}
-                  className="mt-auto w-full flex items-center justify-center gap-2 bg-ember hover:bg-bone text-obsidian font-bold py-4 rounded-full transition-all ember-glow"
+                  onClick={() => { if (selected.is_available !== false) { handleAdd(selected); setSelected(null); } }}
+                  disabled={selected.is_available === false}
+                  className="mt-auto w-full flex items-center justify-center gap-2 bg-ember hover:bg-bone text-obsidian font-bold py-4 rounded-full transition-all ember-glow disabled:opacity-40 disabled:hover:bg-ember disabled:cursor-not-allowed"
                 >
-                  <Plus size={20} strokeWidth={2.5} /> Añadir a la canasta
+                  {selected.is_available === false ? 'Agotado por hoy' : (<><Plus size={20} strokeWidth={2.5} /> Añadir a la canasta</>)}
                 </button>
               </div>
             </motion.div>

@@ -21,6 +21,8 @@ export function CartProvider({ children }) {
   }, [items]);
 
   const addItem = useCallback((item) => {
+    // item.id (el id del MenuItem) viaja con el carrito para poder vincular
+    // el pedido con su contraparte en el OS al hacer checkout (ver Order.jsx).
     setItems((prev) => {
       const existing = prev.find((i) => i.name === item.name);
       if (existing) {

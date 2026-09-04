@@ -21,11 +21,11 @@ export default function SinSelection({ items }) {
   const [hovered, setHovered] = useState(null);
 
   const { sins } = SITE_CONTENT;
-  const available = items && items.length > 0 ? items.filter(i => i.is_available !== false) : [];
+  const available = items && items.length > 0 ? items.filter((i) => i.is_available !== false) : [];
   const display = available.length > 0 ? available.slice(0, 6) : FALLBACK;
 
   const handleAdd = (item) => {
-    addItem({ name: item.name, price: item.price, image_url: item.image_url });
+    addItem({ id: item.id, name: item.name, price: item.price, image_url: item.image_url });
     toast({ title: 'Añadido a la canasta', description: item.name });
   };
 

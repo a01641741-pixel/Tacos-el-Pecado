@@ -69,6 +69,16 @@
       "title": "Subtotal",
       "type": "number"
     },
+    "sync_error": {
+      "title": "Error de sincronización",
+      "type": "string"
+    },
+    "synced": {
+      "default": false,
+      "description": "Indica si esta venta ya se registró en El Pecado OS (y por lo tanto ya descontó inventario real).",
+      "title": "Sincronizado con OS",
+      "type": "boolean"
+    },
     "total": {
       "default": 0,
       "title": "Total",

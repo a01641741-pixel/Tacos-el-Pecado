@@ -53,7 +53,7 @@ export default function QuickMenuModal({ open, onClose }) {
   useEffect(() => {
     if (!open) return;
     base44.entities.MenuItem.list('order_index', 50)
-      .then((data) => { if (data && data.length) setItems(data); })
+      .then((data) => { if (data && data.length) setItems(data.filter((i) => i.is_available !== false)); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [open]);

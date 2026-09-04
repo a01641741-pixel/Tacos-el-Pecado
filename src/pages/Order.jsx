@@ -61,7 +61,25 @@ export default function Order() {
         status: 'pendiente',
         notes: form.notes,
       };
-      await base44.entities.Order.create(orderData);
+      const createdOrder = await base44.entities.Order.create(orderData);
+
+      // Intenta descontar el inventario real en El Pecado OS (no bloqueante:
+      // si el OS no responde, el pedido ya quedó guardado y se puede
+      // reconciliar después — nunca le fallamos el checkout al cliente por esto).
+      try {
+        const orderItemsWithIds = items.map((i) => ({ menu_item_id: i.id, quantity: i.quantity, price: i.price }));
+        const syncRes = await base44.functions.invoke('syncWithOs', {
+          action: 'pushOrder',
+          order: { items: orderItemsWithIds, total, payment_method: form.payment_method }
+        });
+        if (syncRes.data?.status === 'synced') {
+          await base44.entities.Order.update(createdOrder.id, { synced: true });
+        } else if (syncRes.data?.status === 'error') {
+          await base44.entities.Order.update(createdOrder.id, { sync_error: syncRes.data.message || 'Error desconocido' });
+        }
+      } catch (e) {
+        await base44.entities.Order.update(createdOrder.id, { sync_error: 'No se pudo contactar al OS' }).catch(() => {});
+      }
 
       // Upsert customer
       try {

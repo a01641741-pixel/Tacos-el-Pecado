@@ -1,0 +1,118 @@
+{
+  "name": "Order",
+  "properties": {
+    "address": {
+      "title": "Dirección de entrega",
+      "type": "string"
+    },
+    "arrival_status": {
+      "title": "Estado de llegada",
+      "type": "string"
+    },
+    "channel": {
+      "default": "domicilio",
+      "enum": [
+        "domicilio",
+        "comer_en_lugar",
+        "para_llevar"
+      ],
+      "title": "Canal",
+      "type": "string"
+    },
+    "customer_email": {
+      "title": "Correo",
+      "type": "string"
+    },
+    "customer_name": {
+      "title": "Nombre del cliente",
+      "type": "string"
+    },
+    "customer_phone": {
+      "title": "Teléfono",
+      "type": "string"
+    },
+    "delivery_fee": {
+      "default": 0,
+      "title": "Envío",
+      "type": "number"
+    },
+    "eta_minutes": {
+      "title": "Minutos de llegada",
+      "type": "number"
+    },
+    "items": {
+      "default": [],
+      "items": {
+        "type": "object"
+      },
+      "title": "Artículos",
+      "type": "array"
+    },
+    "notes": {
+      "title": "Notas del cliente",
+      "type": "string"
+    },
+    "status": {
+      "default": "pendiente",
+      "enum": [
+        "pendiente",
+        "preparando",
+        "en_camino",
+        "entregado",
+        "cancelado"
+      ],
+      "title": "Estado",
+      "type": "string"
+    },
+    "subtotal": {
+      "default": 0,
+      "title": "Subtotal",
+      "type": "number"
+    },
+    "total": {
+      "default": 0,
+      "title": "Total",
+      "type": "number"
+    }
+  },
+  "required": [
+    "customer_name",
+    "customer_phone"
+  ],
+  "rls": {
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "mesero"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "user_condition": {
+            "role": "mesero"
+          }
+        }
+      ]
+    }
+  },
+  "type": "object"
+}

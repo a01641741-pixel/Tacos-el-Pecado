@@ -1,0 +1,51 @@
+{
+  "name": "Customer",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Nombre"
+    },
+    "phone": {
+      "type": "string",
+      "title": "Teléfono"
+    },
+    "email": {
+      "type": "string",
+      "title": "Correo"
+    },
+    "address": {
+      "type": "string",
+      "title": "Dirección principal"
+    },
+    "total_orders": {
+      "type": "number",
+      "default": 0,
+      "title": "Total de pedidos"
+    },
+    "total_spent": {
+      "type": "number",
+      "default": 0,
+      "title": "Total gastado"
+    },
+    "last_order_date": {
+      "type": "string",
+      "format": "date-time",
+      "title": "Último pedido"
+    },
+    "loyalty_tier": {
+      "type": "string",
+      "enum": [
+        "nuevo",
+        "fieles",
+        "pecador_legendario"
+      ],
+      "default": "nuevo",
+      "title": "Nivel de lealtad"
+    }
+  },
+  "required": [
+    "name",
+    "phone"
+  ]
+}

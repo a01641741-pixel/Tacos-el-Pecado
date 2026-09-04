@@ -1,0 +1,52 @@
+{
+  "name": "MenuItem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "title": "Nombre"
+    },
+    "description": {
+      "type": "string",
+      "title": "Descripción"
+    },
+    "price": {
+      "type": "number",
+      "title": "Precio"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "tacos",
+        "especiales",
+        "bebidas",
+        "complementos"
+      ],
+      "default": "tacos",
+      "title": "Categoría"
+    },
+    "image_url": {
+      "type": "string",
+      "title": "Imagen"
+    },
+    "is_available": {
+      "type": "boolean",
+      "default": true,
+      "title": "Disponible"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "title": "Destacado"
+    },
+    "order_index": {
+      "type": "number",
+      "default": 0,
+      "title": "Orden"
+    }
+  },
+  "required": [
+    "name",
+    "price"
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "name": "Invitation",
+  "properties": {
+    "email": {
+      "title": "Correo invitado",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expira",
+      "type": "string"
+    },
+    "invited_by": {
+      "title": "Invitado por",
+      "type": "string"
+    },
+    "role": {
+      "enum": [
+        "admin",
+        "mesero"
+      ],
+      "title": "Rol asignado",
+      "type": "string"
+    },
+    "status": {
+      "default": "pendiente",
+      "enum": [
+        "pendiente",
+        "activado",
+        "expirado"
+      ],
+      "title": "Estado",
+      "type": "string"
+    },
+    "token": {
+      "title": "Token de acceso",
+      "type": "string"
+    }
+  },
+  "required": [
+    "email",
+    "role",
+    "token"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "email": "a01641741@tec.mx"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "email": "a01641741@tec.mx"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "email": "a01641741@tec.mx"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "email": "a01641741@tec.mx"
+      }
+    }
+  },
+  "type": "object"
+}

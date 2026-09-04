@@ -1,0 +1,34 @@
+{
+  "name": "Table",
+  "type": "object",
+  "properties": {
+    "number": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "libre",
+        "ocupada",
+        "esperando_pago"
+      ],
+      "default": "libre"
+    },
+    "capacity": {
+      "type": "number",
+      "default": 4
+    },
+    "zone": {
+      "type": "string",
+      "enum": [
+        "interior",
+        "terraza",
+        "bar"
+      ],
+      "default": "interior"
+    }
+  },
+  "required": [
+    "number"
+  ]
+}

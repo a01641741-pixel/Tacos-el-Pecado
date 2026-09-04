@@ -1,0 +1,80 @@
+{
+  "name": "Comanda",
+  "type": "object",
+  "properties": {
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "mesa",
+        "domicilio"
+      ],
+      "default": "mesa"
+    },
+    "table_number": {
+      "type": "number"
+    },
+    "waiter_name": {
+      "type": "string"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "customer_phone": {
+      "type": "string"
+    },
+    "delivery_address": {
+      "type": "string"
+    },
+    "driver_name": {
+      "type": "string",
+      "title": "Repartidor"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "subtotal": {
+      "type": "number",
+      "default": 0
+    },
+    "total": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "abierta",
+        "en_cocina",
+        "lista",
+        "servida",
+        "cerrada"
+      ],
+      "default": "abierta"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "closed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "order_type",
+    "status"
+  ]
+}

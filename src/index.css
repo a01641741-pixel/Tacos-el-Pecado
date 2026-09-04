@@ -1,0 +1,151 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Pacifico&family=Inter:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand palette from logo: Red badge, Charcoal, Cream, Tan */
+    --background: 36 31% 95%;
+    --foreground: 20 10% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 10% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 10% 15%;
+    --primary: 2 63% 49%;
+    --primary-foreground: 36 31% 95%;
+    --secondary: 20 10% 15%;
+    --secondary-foreground: 36 31% 95%;
+    --muted: 36 20% 88%;
+    --muted-foreground: 20 5% 35%;
+    --accent: 35 56% 75%;
+    --accent-foreground: 20 10% 15%;
+    --destructive: 0 63% 40%;
+    --destructive-foreground: 36 31% 95%;
+    --border: 36 15% 85%;
+    --input: 36 15% 85%;
+    --ring: 2 63% 49%;
+    --radius: 0.75rem;
+    --font-heading: 'Anton', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-display: 'Pacifico', cursive;
+    --font-mono: ui-monospace, monospace;
+  }
+
+  .dark {
+    --background: 15 16% 7%;
+    --foreground: 36 31% 95%;
+    --card: 20 12% 10%;
+    --card-foreground: 36 31% 95%;
+    --popover: 20 12% 10%;
+    --popover-foreground: 36 31% 95%;
+    --primary: 2 63% 49%;
+    --primary-foreground: 36 31% 95%;
+    --secondary: 36 31% 95%;
+    --secondary-foreground: 20 10% 15%;
+    --muted: 20 8% 18%;
+    --muted-foreground: 36 10% 65%;
+    --accent: 35 56% 75%;
+    --accent-foreground: 20 10% 15%;
+    --destructive: 0 53% 38%;
+    --destructive-foreground: 36 31% 95%;
+    --border: 20 8% 20%;
+    --input: 20 8% 20%;
+    --ring: 2 63% 49%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .btn-sin {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-primary px-7 py-3.5 font-heading text-lg uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:scale-105 hover:bg-primary/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-95;
+  }
+  .btn-sin-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-secondary bg-transparent px-7 py-3.5 font-heading text-lg uppercase tracking-wide text-secondary transition-all hover:scale-105 hover:bg-secondary hover:text-secondary-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-95;
+  }
+  .section-pad {
+    @apply px-5 py-16 sm:px-8 md:py-24;
+  }
+  .tag-sin {
+    @apply inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold uppercase tracking-wider text-primary;
+  }
+}
+
+@layer utilities {
+  .ember-glow {
+    box-shadow: 0 4px 24px -6px rgba(200, 56, 51, 0.5);
+  }
+  .ember-pulse {
+    animation: ember-pulse-anim 2.5s ease-in-out infinite;
+  }
+  .focus-ember:focus-visible {
+    outline: 2px solid #C83833;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+    opacity: 0.035;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+  .flicker-neon {
+    animation: flicker 4s linear infinite;
+  }
+  .text-glow-ember {
+    text-shadow: 0 0 30px rgba(200, 56, 51, 0.5), 0 0 60px rgba(200, 56, 51, 0.2);
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+}
+
+@keyframes ember-pulse-anim {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200, 56, 51, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(200, 56, 51, 0); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  41% { opacity: 1; }
+  42% { opacity: 0.85; }
+  43% { opacity: 1; }
+  45% { opacity: 0.35; }
+  46% { opacity: 1; }
+  70% { opacity: 0.9; }
+  72% { opacity: 1; }
+}

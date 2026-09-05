@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, Trash2, ArrowRight, ArrowLeft, Check, Flame, MapPin, User, CreditCard, Clock } from 'lucide-react';
+import { Plus, Minus, Trash2, ArrowRight, ArrowLeft, Check, Flame, MapPin, User, CreditCard, Clock, StickyNote } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { useCart } from '@/lib/cartContext';
 import { useToast } from '@/components/ui/use-toast';
@@ -14,7 +14,7 @@ const DELIVERY_FEE = 25;
 const STEPS = ['La Canasta', 'Tu Confesión', 'El Pago'];
 
 export default function Order() {
-  const { items, updateQuantity, removeItem, clearCart, subtotal, count, channel, etaMinutes, arrivalStatus } = useCart();
+  const { items, updateQuantity, removeItem, updateNote, clearCart, subtotal, count, channel, etaMinutes, arrivalStatus } = useCart();
   const { toast } = useToast();
   const { user } = useAuth();
   const [step, setStep] = useState(0);
@@ -45,7 +45,7 @@ export default function Order() {
   const submit = async () => {
     setSubmitting(true);
     try {
-      const orderItems = items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity }));
+      const orderItems = items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity, notes: i.note || undefined }));
       const orderData = {
         customer_name: form.customer_name,
         customer_email: form.customer_email,
@@ -67,10 +67,19 @@ export default function Order() {
       // si el OS no responde, el pedido ya quedó guardado y se puede
       // reconciliar después — nunca le fallamos el checkout al cliente por esto).
       try {
-        const orderItemsWithIds = items.map((i) => ({ menu_item_id: i.id, quantity: i.quantity, price: i.price }));
+        const orderItemsWithIds = items.map((i) => ({ menu_item_id: i.id, quantity: i.quantity, price: i.price, notes: i.note || undefined }));
         const syncRes = await base44.functions.invoke('syncWithOs', {
           action: 'pushOrder',
-          order: { items: orderItemsWithIds, total, payment_method: form.payment_method }
+          order: {
+            items: orderItemsWithIds,
+            total,
+            payment_method: form.payment_method,
+            notes: form.notes || undefined,
+            customer_name: form.customer_name,
+            customer_phone: form.customer_phone,
+            customer_address: isDelivery ? form.delivery_address : undefined,
+            channel: channel || 'domicilio'
+          }
         });
         if (syncRes.data?.status === 'synced') {
           await base44.entities.Order.update(createdOrder.id, { synced: true });
@@ -182,17 +191,28 @@ export default function Order() {
               ) : (
                 <div className="space-y-3">
                   {items.map((item) => (
-                    <div key={item.name} className="flex items-center gap-4 bg-card border border-white/5 rounded-2xl p-4">
-                      <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
-                      <div className="flex-1">
-                        <h3 className="font-display font-bold text-bone">{item.name}</h3>
-                        <span className="text-ember font-bold">${item.price}</span>
+                    <div key={item.name} className="bg-card border border-white/5 rounded-2xl p-4">
+                      <div className="flex items-center gap-4">
+                        <img src={item.image_url} alt={item.name} className="w-16 h-16 rounded-xl object-cover" />
+                        <div className="flex-1">
+                          <h3 className="font-display font-bold text-bone">{item.name}</h3>
+                          <span className="text-ember font-bold">${item.price}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => updateQuantity(item.name, -1)} aria-label="Reducir cantidad" className="w-8 h-8 rounded-full bg-white/5 hover:bg-ember text-bone hover:text-obsidian flex items-center justify-center transition-colors"><Minus size={16} /></button>
+                          <span className="font-mono font-bold text-bone w-6 text-center">{item.quantity}</span>
+                          <button onClick={() => updateQuantity(item.name, 1)} aria-label="Aumentar cantidad" className="w-8 h-8 rounded-full bg-white/5 hover:bg-ember text-bone hover:text-obsidian flex items-center justify-center transition-colors"><Plus size={16} /></button>
+                          <button onClick={() => removeItem(item.name)} aria-label="Eliminar" className="w-8 h-8 rounded-full bg-white/5 hover:bg-destructive text-bone/60 hover:text-white flex items-center justify-center transition-colors ml-2"><Trash2 size={15} /></button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <button onClick={() => updateQuantity(item.name, -1)} aria-label="Reducir cantidad" className="w-8 h-8 rounded-full bg-white/5 hover:bg-ember text-bone hover:text-obsidian flex items-center justify-center transition-colors"><Minus size={16} /></button>
-                        <span className="font-mono font-bold text-bone w-6 text-center">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.name, 1)} aria-label="Aumentar cantidad" className="w-8 h-8 rounded-full bg-white/5 hover:bg-ember text-bone hover:text-obsidian flex items-center justify-center transition-colors"><Plus size={16} /></button>
-                        <button onClick={() => removeItem(item.name)} aria-label="Eliminar" className="w-8 h-8 rounded-full bg-white/5 hover:bg-destructive text-bone/60 hover:text-white flex items-center justify-center transition-colors ml-2"><Trash2 size={15} /></button>
+                      <div className="flex items-center gap-2 mt-3 pl-1">
+                        <StickyNote size={14} className="text-bone/30 shrink-0" />
+                        <Input
+                          value={item.note || ''}
+                          onChange={(e) => updateNote(item.name, e.target.value)}
+                          placeholder={`Nota para ${item.name}: sin cebolla, extra salsa…`}
+                          className="bg-transparent border-white/10 text-bone text-sm h-9 focus-ember"
+                        />
                       </div>
                     </div>
                   ))}
@@ -285,8 +305,11 @@ export default function Order() {
               <div className="bg-card border border-white/5 rounded-2xl p-6 space-y-3">
                 <h3 className="font-display font-bold text-bone mb-2">Resumen del pecado</h3>
                 {items.map((i) => (
-                  <div key={i.name} className="flex justify-between text-bone/60 text-sm">
-                    <span>{i.quantity}× {i.name}</span><span>${i.price * i.quantity}</span>
+                  <div key={i.name} className="text-bone/60 text-sm">
+                    <div className="flex justify-between">
+                      <span>{i.quantity}× {i.name}</span><span>${i.price * i.quantity}</span>
+                    </div>
+                    {i.note && <div className="text-xs text-ember/80 mt-0.5">↳ {i.note}</div>}
                   </div>
                 ))}
                 {isDelivery && <div className="flex justify-between text-bone/60 text-sm pt-2 border-t border-white/5"><span>Entrega</span><span>${deliveryFee}</span></div>}

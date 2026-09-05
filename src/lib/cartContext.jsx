@@ -38,6 +38,10 @@ export function CartProvider({ children }) {
     setItems((prev) => prev.filter((i) => i.name !== name));
   }, []);
 
+  const updateNote = useCallback((name, note) => {
+    setItems((prev) => prev.map((i) => (i.name === name ? { ...i, note } : i)));
+  }, []);
+
   const updateQuantity = useCallback((name, delta) => {
     setItems((prev) =>
       prev
@@ -60,7 +64,7 @@ export function CartProvider({ children }) {
 
   return (
     <CartContext.Provider
-      value={{ items, addItem, removeItem, updateQuantity, clearCart, count, subtotal, channel, setChannel, etaMinutes, setEtaMinutes, arrivalStatus, setArrivalStatus }}
+      value={{ items, addItem, removeItem, updateQuantity, updateNote, clearCart, count, subtotal, channel, setChannel, etaMinutes, setEtaMinutes, arrivalStatus, setArrivalStatus }}
     >
       {children}
     </CartContext.Provider>

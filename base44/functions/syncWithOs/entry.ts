@@ -73,19 +73,30 @@ export default async function (req) {
           .map((it) => ({
             product_id: byId[it.menu_item_id].os_id,
             quantity: it.quantity,
-            unit_price: it.price
+            unit_price: it.price,
+            notes: typeof it.notes === 'string' && it.notes.trim() ? it.notes.trim() : undefined
           }));
 
         if (linkedItems.length === 0) {
           // Ningún producto de este pedido está vinculado al OS todavía (os_id vacío) —
-          // no hay inventario real que descontar.
-          return Response.json({ status: 'synced', skipped: true });
+          // no se registró nada en el OS. Nunca reportamos esto como "synced": ese campo
+          // significa "esta venta ya se registró en el OS", y aquí literalmente no se registró.
+          return Response.json({ status: 'skipped', message: 'Ninguno de los productos de este pedido tiene os_id vinculado en el OS todavía.' });
         }
 
+        // Se reenvían las notas del cliente (generales y por producto) y sus datos de
+        // contacto/entrega para que la cocina (a través de Comandas) tenga todas las
+        // especificaciones del pedido, no solo qué productos y cuántos.
         const data = await callOs(baseUrl, apiKey, 'create_order', {
           items: linkedItems,
           total: order.total,
-          payment_method: order.payment_method === 'tarjeta' ? 'tarjeta' : 'efectivo'
+          payment_method: order.payment_method === 'tarjeta' ? 'tarjeta' : 'efectivo',
+          notes: typeof order.notes === 'string' && order.notes.trim() ? order.notes.trim() : undefined,
+          customer_name: typeof order.customer_name === 'string' ? order.customer_name : undefined,
+          customer_phone: typeof order.customer_phone === 'string' ? order.customer_phone : undefined,
+          customer_address: typeof order.customer_address === 'string' ? order.customer_address : undefined,
+          channel: typeof order.channel === 'string' ? order.channel : undefined,
+          source: 'menu_publico'
         });
         return Response.json({ status: 'synced', sale_id: data.sale_id });
       } catch (e) {

@@ -83,6 +83,8 @@ export default function Order() {
         });
         if (syncRes.data?.status === 'synced') {
           await base44.entities.Order.update(createdOrder.id, { synced: true });
+        } else if (syncRes.data?.status === 'skipped') {
+          await base44.entities.Order.update(createdOrder.id, { sync_error: syncRes.data.message || 'Productos sin vincular en el OS todavía' });
         } else if (syncRes.data?.status === 'error') {
           await base44.entities.Order.update(createdOrder.id, { sync_error: syncRes.data.message || 'Error desconocido' });
         }
